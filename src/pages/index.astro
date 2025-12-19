@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Greeting from '../components/Greeting';
 
 const pageTitle = "我的 Astro 站点";
 ---
@@ -7,5 +8,5 @@ const pageTitle = "我的 Astro 站点";
 <BaseLayout pageTitle={pageTitle}>
 
 	<h2>我超棒的博客副标题</h2>
-
+	<Greeting client:load messages={["Hej", "Hallo", "Hola", "Habari"]} />
 </BaseLayout>
