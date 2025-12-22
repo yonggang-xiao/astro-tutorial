@@ -41,4 +41,3 @@ jobs:
           local_path: dist
           remote_path: ""
           clean: true
-          accelerate: false
