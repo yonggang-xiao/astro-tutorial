@@ -1,0 +1,74 @@
+name: Deploy to Cloud Storage
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: 'Select deployment target'
+        required: true
+        default: 'oss'
+        type: choice
+        options:
+          - oss
+          - cos
+          - both
+      oss_path:
+        description: 'OSS deployment path (e.g., / or /docs/ or /v1/)'
+        required: false
+        default: '/'
+        type: string
+
+concurrency:
+  group: deploy-oss-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          ASTRO_BASE_PATH: ${{ github.event.inputs.oss_path || '/' }}
+
+      - name: Setup Ossutil
+        uses: manyuanrong/setup-ossutil@v3.0
+        with:
+          endpoint: ${{ secrets.OSS_ENDPOINT }}
+          access-key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+
+      - name: Upload to OSS
+        if: github.event_name == 'push' || github.event.inputs.deployment_target == 'oss' || github.event.inputs.deployment_target == 'both'
+        run: |
+          OSS_PATH="${{ github.event.inputs.oss_path || '/' }}"
+          ossutil cp -rf dist/ oss://${{ secrets.OSS_BUCKET }}${OSS_PATH} --delete
+
+      - name: Upload to COS
+        if: github.event.inputs.deployment_target == 'cos' || github.event.inputs.deployment_target == 'both'
+        uses: TencentCloud/cos-action@v1
+        with:
+          secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: ${{ secrets.COS_REGION }}
+          local_path: dist
+          remote_path: ""
+          clean: true
