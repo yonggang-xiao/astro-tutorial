@@ -19,7 +19,7 @@ on:
       oss_path:
         description: 'OSS deployment path (e.g., / or /docs/ or /v1/)'
         required: false
-        default: '/'
+        default: '/xyg/'
         type: string
 
 concurrency:
