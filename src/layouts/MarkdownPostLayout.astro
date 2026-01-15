@@ -10,7 +10,7 @@ const { BASE_URL } = import.meta.env;
     <img src={frontmatter.image.url} width="300" alt={frontmatter.image.alt} />
     <div class="tags">
     {frontmatter.tags.map((tag: string) => (
-      <p class="tag"><a href={`${BASE_URL}tags/${tag}`}>{tag}</a></p>
+      <p class="tag"><a href={`${BASE_URL}/tags/${tag}`}>{tag}</a></p>
     ))}
     </div>
     <slot />

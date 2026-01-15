@@ -10,6 +10,6 @@ const { BASE_URL } = import.meta.env;
 <BaseLayout pageTitle={pageTitle}>
         <p>在这里，我将分享我的 Astro 学习之旅。</p>
         <ul>
-            {allPosts.map((post: any) => <BlogPost url={`${BASE_URL}posts/${post.id}/`} title={post.data.title} />)}
+            {allPosts.map((post: any) => <BlogPost url={`${BASE_URL}/posts/${post.id}/`} title={post.data.title} />)}
         </ul>
 </BaseLayout>
