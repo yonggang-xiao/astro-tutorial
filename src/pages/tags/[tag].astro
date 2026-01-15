@@ -19,10 +19,11 @@ export async function getStaticPaths() {
 
 const { tag } = Astro.params;
 const { posts } = Astro.props;
+const { BASE_URL } = import.meta.env;
 ---
 <BaseLayout pageTitle={tag}>
   <p>包含「{tag}」标签的文章</p>
   <ul>
-    {posts.map((post: any) => <BlogPost url={`/posts/${post.id}/`} title={post.data.title}/>)}
+    {posts.map((post: any) => <BlogPost url={`${BASE_URL}/posts/${post.id}/`} title={post.data.title}/>)}
   </ul>
 </BaseLayout>
