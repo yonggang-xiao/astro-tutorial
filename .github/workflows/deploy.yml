@@ -17,7 +17,7 @@ on:
           - cos
           - both
       oss_path:
-        description: 'OSS deployment path (e.g., / or /docs/ or /v1/)'
+        description: 'OSS deployment path (e.g., /docs/ or /v1/)'
         required: false
         default: '/xyg/'
         type: string
@@ -46,7 +46,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          ASTRO_BASE_PATH: ${{ github.event.inputs.oss_path || '/' }}
+          ASTRO_BASE_PATH: ${{ github.event.inputs.oss_path || '/xyg/' }}
 
       - name: Setup Ossutil
         uses: manyuanrong/setup-ossutil@v3.0
@@ -58,8 +58,13 @@ jobs:
       - name: Upload to OSS
         if: github.event_name == 'push' || github.event.inputs.deployment_target == 'oss' || github.event.inputs.deployment_target == 'both'
         run: |
-          OSS_PATH="${{ github.event.inputs.oss_path || '/' }}"
-          ossutil cp -rf dist/ oss://${{ secrets.OSS_BUCKET }}${OSS_PATH} --delete
+          OSS_PATH="${{ github.event.inputs.oss_path || '/xyg/' }}"
+          if [ "$OSS_PATH" = "/" ]; then
+            echo "Error: Cannot deploy to root path. Specify a subdirectory like /xyg/"
+            exit 1
+          fi
+          ossutil rm oss://${{ secrets.OSS_BUCKET }}${OSS_PATH} -r -f
+          ossutil cp -rf dist/ oss://${{ secrets.OSS_BUCKET }}${OSS_PATH}
 
       - name: Upload to COS
         if: github.event.inputs.deployment_target == 'cos' || github.event.inputs.deployment_target == 'both'
