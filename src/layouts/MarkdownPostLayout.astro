@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 const { frontmatter } = Astro.props;
+const { BASE_URL } = import.meta.env;
 ---
 <BaseLayout pageTitle={frontmatter.title}>
     <p>发表于：{frontmatter.pubDate.toLocaleDateString()}</p>
@@ -9,7 +10,7 @@ const { frontmatter } = Astro.props;
     <img src={frontmatter.image.url} width="300" alt={frontmatter.image.alt} />
     <div class="tags">
     {frontmatter.tags.map((tag: string) => (
-      <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
+      <p class="tag"><a href={`${BASE_URL}tags/${tag}`}>{tag}</a></p>
     ))}
     </div>
     <slot />
